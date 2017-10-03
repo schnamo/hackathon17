@@ -1,6 +1,7 @@
 distance = 5
 offset = 5
 
+
 def readFile(filename):
     File = open(filename)
     counter = 0
@@ -16,7 +17,10 @@ def readFile(filename):
                 values = line.split()
                 content.append(values)
 
-def readOtherFile(filename):
+
+def readOtherFile(filename, seqLength):
+
+    #read file from alignment programme
 
     File = open(filename)
     content = []
@@ -26,7 +30,10 @@ def readOtherFile(filename):
         if len(line) == 0:
             return content
         values = line.split()
-        content.append(values)
+        #only those that doesn't overlap
+        if not(((seqLength - int(values[6])) <= (int(values[1]) + 3) <= (seqLength - int(values[5]))) or ((seqLength - int(values[6])) <= int(values[0]) <= (seqLength - int(values[5]))) or (int(values[0]) <= (seqLength - int(values[5]) + 3) <= int(values[1])) or (int(values[5]) <= (seqLength - int(values[6])) <= int(values[1]))):
+            content.append(values)
+
 
 def extractInteractions(content):
 
@@ -97,7 +104,7 @@ def extractInteractions(content):
 
 def generateInput(otherFile, interactions, sequence):
 
-    content = readOtherFile(otherFile)
+    content = readOtherFile(otherFile, len(sequence))
     finalOutput = []
 
     for element in content:
