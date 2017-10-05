@@ -35,7 +35,7 @@ def readOtherFile(filename, seqLength):
             content.append(values)
 
 
-def extractInteractions(content):
+def extractInteractions(content, name):
 
     interactions = []
     sequence = ''
@@ -60,12 +60,18 @@ def extractInteractions(content):
         newContent[l][4] = int(newContent[l][4]) - gapList[int(newContent[l][4]) - 1]
 
     content = newContent
+    pktest = 0
 
     for i in range(0, len(content)):
         motifCounter = 0
         motif = True
 
         if int(content[i][4]) > 0:
+            if i < len(content) - 3:
+                if int(content[i+1][4]) > 0:
+                    if (int(content[i][4]) - int(content[i + 1][4]) == -1 and i < content[i][4]):
+                        pktest = 1
+                        print(i)
             j = i + 1
             #allowing for 1 bulge and some distance
             while j < len(content) and motifCounter < 2 and motif is True:
@@ -98,6 +104,9 @@ def extractInteractions(content):
             interactions.append([i + 1, 0, -1, 0])
 
     #print(sequence)
+
+    if pktest == 1:
+        print(name)
 
     return interactions, sequence
 

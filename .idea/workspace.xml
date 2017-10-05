@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c3f16f67-53db-49e5-86ed-38e21bdea0c3" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/discard_overlapping.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/extract_motifs.py" afterPath="$PROJECT_DIR$/extract_motifs.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/read_file.py" afterPath="$PROJECT_DIR$/read_file.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -18,8 +17,8 @@
       <file leaf-file-name="extract_motifs.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/extract_motifs.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
-              <caret line="20" column="0" lean-forward="true" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+            <state relative-caret-position="668">
+              <caret line="53" column="0" lean-forward="true" selection-start-line="53" selection-start-column="0" selection-end-line="53" selection-end-column="0" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -30,8 +29,8 @@
       <file leaf-file-name="read_file.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/read_file.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="345">
-              <caret line="32" column="32" lean-forward="false" selection-start-line="32" selection-start-column="32" selection-end-line="32" selection-end-column="32" />
+            <state relative-caret-position="292">
+              <caret line="71" column="97" lean-forward="false" selection-start-line="71" selection-start-column="97" selection-end-line="71" selection-end-column="97" />
               <folding />
             </state>
           </provider>
@@ -69,8 +68,8 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/extract_motifs.py" />
         <option value="$PROJECT_DIR$/discard_overlapping.py" />
+        <option value="$PROJECT_DIR$/extract_motifs.py" />
         <option value="$PROJECT_DIR$/read_file.py" />
       </list>
     </option>
@@ -221,16 +220,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/extract_motifs.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="20" column="0" lean-forward="true" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/discard_overlapping.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="75">
@@ -241,10 +230,20 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/extract_motifs.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="668">
+          <caret line="53" column="0" lean-forward="true" selection-start-line="53" selection-start-column="0" selection-end-line="53" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/read_file.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="32" column="32" lean-forward="false" selection-start-line="32" selection-start-column="32" selection-end-line="32" selection-end-column="32" />
+        <state relative-caret-position="292">
+          <caret line="71" column="97" lean-forward="false" selection-start-line="71" selection-start-column="97" selection-end-line="71" selection-end-column="97" />
           <folding />
         </state>
       </provider>
