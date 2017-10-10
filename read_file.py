@@ -30,7 +30,7 @@ def readOtherFile(filename, seqLength):
         if len(line) == 0:
             return content
         values = line.split()
-        #only those that doesn't overlap
+        #discard those which overlap
         if not(((seqLength - int(values[6])) <= (int(values[1]) + 3) <= (seqLength - int(values[5]))) or ((seqLength - int(values[6])) <= int(values[0]) <= (seqLength - int(values[5]))) or (int(values[0]) <= (seqLength - int(values[5]) + 3) <= int(values[1])) or (int(values[5]) <= (seqLength - int(values[6])) <= int(values[1]))):
             content.append(values)
 
@@ -73,7 +73,7 @@ def extractInteractions(content, name):
                         pktest = 1
                         print(i)
             j = i + 1
-            #allowing for 1 bulge and some distance
+            #allowing for 1 bulge and some distance todo: maybe allow for 2?
             while j < len(content) and motifCounter < 2 and motif is True:
                 if int(content[j][4]) == 0:
                     motifCounter = motifCounter + 1
@@ -117,7 +117,7 @@ def generateInput(otherFile, interactions, sequence):
     finalOutput = []
 
     for element in content:
-        j = len(sequence) - int(element[5])
+        j = int(element[5])
         interact = 0
         for i in range(0, len(interactions)):
             if int(interactions[i][2]) > 0:
