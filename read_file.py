@@ -31,7 +31,7 @@ def readOtherFile(filename, seqLength):
             return content
         values = line.split()
         #discard those which overlap
-        if not(((seqLength - int(values[6])) <= (int(values[1]) + 3) <= (seqLength - int(values[5]))) or ((seqLength - int(values[6])) <= int(values[0]) <= (seqLength - int(values[5]))) or (int(values[0]) <= (seqLength - int(values[5]) + 3) <= int(values[1])) or (int(values[5]) <= (seqLength - int(values[6])) <= int(values[1]))):
+        if not(((int(values[6])) <= (int(values[1]) + 3) <= (int(values[5]))) or ((int(values[6])) <= int(values[0]) <= (int(values[5]))) or (int(values[0]) <= (int(values[5]) + 3) <= int(values[1])) or (int(values[5]) <= (int(values[6])) <= int(values[1]))):
             content.append(values)
 
 
