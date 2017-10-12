@@ -1,3 +1,4 @@
+## stacking
 # AU CG GC GU UA UG second this
 stacking = [[-93, -224, -208, -55, -110, -136],  # AU first this
 [-211, -326, -236, -141, -208, -211],            # CG
@@ -5,6 +6,8 @@ stacking = [[-93, -224, -208, -55, -110, -136],  # AU first this
 [-127, -251, -211, -50, -136, 129],              # GU
 [-133, -235, -211, -100, -93, -127],             # UA
 [-100, -153, -141, 30, -55, -50]]                # UG
+
+## terminal mismatch
 # A C G U second this
 terminal_mismatch_AU = [[-80, -100, -80, -100],   # A first this
                          [-60, -70, -60, -70],    # C
@@ -50,7 +53,7 @@ symmetryCorrection = 43
 intermolInitiation = 409
 
 
-def calc_energy(seq1, seq2):
+def calc_energy(seq1, seq2, seqfollowing1, seqpre2):
     # here we assume the reverse seq2
     specialCaseCounter = 0
     freeEnergy = intermolInitiation
@@ -60,14 +63,16 @@ def calc_energy(seq1, seq2):
         pair2 = determine_pair(seq1[i+1], seq2[i+1])
         if pair1 < 6 and pair2 < 6:
             freeEnergy = freeEnergy + stacking[pair1][pair2]
-            print(stacking[pair1][pair2])
+            # for special GU case
             if pair1 == 2 and pair2 == 3:
                 if i + 3 < len(seq1):
                     specialCase1 = determine_pair(seq1[i + 2], seq2[i + 2])
                     specialCase2 = determine_pair(seq1[i + 3], seq2[i + 3])
                     if specialCase1 == 5 and specialCase2 == 1:
                         specialCaseCounter += 1
+
     freeEnergy = freeEnergy + penalties(seq1, seq2)
+    freeEnergy = freeEnergy + check_stacking(seq1, seq2, seqfollowing1, seqpre2)
     print(penalties(seq1, seq2))
     print(freeEnergy)
     # special GU case
@@ -78,6 +83,36 @@ def calc_energy(seq1, seq2):
     print(freeEnergy)
     return freeEnergy
 
+def f(x):
+    return {
+        'A': 0,
+        'C': 1,
+        'G': 2,
+        'U': 3,
+        'a': 0,
+        'c': 1,
+        'g': 2,
+        'u': 3,
+        'T': 3,
+        't': 3
+    }.get(x, 9)
+
+def check_stacking(seq1, seq2, following1, pre2):
+    freeEnergy = 0
+    if len(following1) > 0 and len(pre2) > 0:
+        if seq1[-1] == 'A' and seq2[-1] == 'U':
+            freeEnergy = terminal_mismatch_AU[f(following1[0])][f(pre2[-1])]
+        elif seq1[-1] == 'C' and seq2[-1] == 'G':
+            freeEnergy = terminal_mismatch_CG[f(following1[0])][f(pre2[-1])]
+        elif seq1[-1] == 'G' and seq2[-1] == 'C':
+            freeEnergy = terminal_mismatch_GC[f(following1[0])][f(pre2[-1])]
+        elif seq1[-1] == 'G' and seq2[-1] == 'U':
+            freeEnergy = terminal_mismatch_GU[f(following1[0])][f(pre2[-1])]
+        elif seq1[-1] == 'U' and seq2[-1] == 'A':
+            freeEnergy = terminal_mismatch_UA[f(following1[0])][f(pre2[-1])]
+        elif seq1[-1] == 'G' and seq2[-1] == 'U':
+            freeEnergy = terminal_mismatch_GU[f(following1[0])][f(pre2[-1])]
+    return freeEnergy
 
 def penalties(seq1, seq2):
     freeEnergy = 0

@@ -14,7 +14,7 @@ content = read_file(filename)
 # calculate free energy for each interaction
 for line in content:
     if int(line[8]) == 1:
-        energy = calc_energy(line[2], (line[6])[::-1])  # directly give the second part reversed
+        energy = calc_energy(line[2], (line[6])[::-1], line[3], line[5])  # directly give the second part reversed
         energyList.append(energy)
 
 # save in file those that pass threshold
