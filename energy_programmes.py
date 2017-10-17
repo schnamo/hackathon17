@@ -1,3 +1,5 @@
+from math import log1p
+
 ## stacking
 # AU CG GC GU UA UG second this
 stacking = [[-93, -224, -208, -55, -110, -136],  # AU first this
@@ -34,11 +36,15 @@ terminal_mismatch_UA = [[-100, -80, -110, -80],
                         [-110, -80, -120, -80],
                         [-70, -60, -70, -50]]
 
-terminal_mismatch_GU = [[-100, -80, -110, -80],
+terminal_mismatch_UG = [[-100, -80, -110, -80],
                         [-70, -60, -70, -50],
                         [-50, -80, -80, -80],
                         [-70, -60, -70, -50]]
 
+# Bulge Loops (up to n=30)
+bulge_loops = [381, 280, 320, 360, 400, 440, 460, 470, 480, 490, 500, 501, 502, 503, 504, 504, 505, 505, 506, 507, 507, 508, 508, 508, 509, 509, 600, 600, 600, 601]
+special_C_bulge = -90
+RT = 61.6
 
 
 # special GU case GGUC...GGUC
@@ -52,17 +58,19 @@ symmetryCorrection = 43
 # intermolecular initiation
 intermolInitiation = 409
 
+# todo: dangling ends
+# todo: hairpins
 
 def calc_energy(seq1, seq2, seqfollowing1, seqpre2):
     # here we assume the reverse seq2
     specialCaseCounter = 0
     freeEnergy = intermolInitiation
-    print(freeEnergy)
     for i in range(0, len(seq1)-1):
         pair1 = determine_pair(seq1[i], seq2[i])
         pair2 = determine_pair(seq1[i+1], seq2[i+1])
         if pair1 < 6 and pair2 < 6:
             freeEnergy = freeEnergy + stacking[pair1][pair2]
+            print(stacking[pair1][pair2])
             # for special GU case
             if pair1 == 2 and pair2 == 3:
                 if i + 3 < len(seq1):
@@ -70,11 +78,46 @@ def calc_energy(seq1, seq2, seqfollowing1, seqpre2):
                     specialCase2 = determine_pair(seq1[i + 3], seq2[i + 3])
                     if specialCase1 == 5 and specialCase2 == 1:
                         specialCaseCounter += 1
+        elif pair1 == 7:
+            continue
+            # dealing with bulges
+        elif pair2 == 7:
+            bulge_counter = 0
+            j = 3
+            if pair1 < 6:
+                # bulge of length 1
+                nextPair = determine_pair(seq1[i + 2], seq2[i + 2])
+                if nextPair < 6:
+                    freeEnergy = freeEnergy + stacking[pair1][nextPair]
+                    print(stacking[pair1][nextPair])
+                    # todo: consider number of possible loops of identical sequence
+                    freeEnergy = freeEnergy + bulge_loops[0]  # - RT*log1p(2)
+                    print(bulge_loops[0])
+                    if seq1[i + 1] == 'C' or seq2[i + 1] == 'C':
+                        freeEnergy = freeEnergy + special_C_bulge
+                        print(special_C_bulge)
+                # long bulges
+                elif nextPair == 7:
+                    while nextPair == 7:
+                        bulge_counter = bulge_counter + 1
+                        nextPair = determine_pair(seq1[i + j], seq2[i + j])
+                        j = j + 1
+                    freeEnergy = freeEnergy + bulge_loops[bulge_counter]
+                    # in the case of a bulge with more than 1 nt take end penalties into account
+                    if pair1 == 3 or pair1 == 5:
+                        freeEnergy = freeEnergy + guEndPenalty
+                    if pair1 == 0 or pair1 == 4:
+                        freeEnergy = freeEnergy + auEndPenalty
+                    # todo: what about they change the strand?
+
+
 
     freeEnergy = freeEnergy + penalties(seq1, seq2)
-    freeEnergy = freeEnergy + check_stacking(seq1, seq2, seqfollowing1, seqpre2)
     print(penalties(seq1, seq2))
-    print(freeEnergy)
+    # include first non matching base pair after duplex
+    freeEnergy = freeEnergy + check_stacking(seq1, seq2, seqfollowing1, seqpre2)
+    print('stacking:')
+    print(check_stacking(seq1, seq2, seqfollowing1, seqpre2))
     # special GU case
     freeEnergy += specialCaseCounter * specialGUCase
     freeEnergy -= specialCaseCounter * (stacking[2][3] + stacking[3][5] + stacking[5][1])
@@ -110,8 +153,8 @@ def check_stacking(seq1, seq2, following1, pre2):
             freeEnergy = terminal_mismatch_GU[f(following1[0])][f(pre2[-1])]
         elif seq1[-1] == 'U' and seq2[-1] == 'A':
             freeEnergy = terminal_mismatch_UA[f(following1[0])][f(pre2[-1])]
-        elif seq1[-1] == 'G' and seq2[-1] == 'U':
-            freeEnergy = terminal_mismatch_GU[f(following1[0])][f(pre2[-1])]
+        elif seq1[-1] == 'U' and seq2[-1] == 'G':
+            freeEnergy = terminal_mismatch_UG[f(following1[0])][f(pre2[-1])]
     return freeEnergy
 
 def penalties(seq1, seq2):
@@ -168,5 +211,7 @@ def determine_pair(firstBase, secondBase):
         return 4
     elif firstBase == 'U' and secondBase == 'G':
         return 5
+    elif firstBase == '_' or secondBase == '_':
+        return 7
     else:
         return 6
