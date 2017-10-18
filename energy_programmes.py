@@ -65,12 +65,13 @@ def calc_energy(seq1, seq2, seqfollowing1, seqpre2):
     # here we assume the reverse seq2
     specialCaseCounter = 0
     freeEnergy = intermolInitiation
+    if len(seq1) != len(seq2):
+        print('whuuaat' + ' ' +  seq1 + ' ' + seq2)
     for i in range(0, len(seq1)-1):
         pair1 = determine_pair(seq1[i], seq2[i])
         pair2 = determine_pair(seq1[i+1], seq2[i+1])
         if pair1 < 6 and pair2 < 6:
             freeEnergy = freeEnergy + stacking[pair1][pair2]
-            print(stacking[pair1][pair2])
             # for special GU case
             if pair1 == 2 and pair2 == 3:
                 if i + 3 < len(seq1):
@@ -84,46 +85,39 @@ def calc_energy(seq1, seq2, seqfollowing1, seqpre2):
         elif pair2 == 7:
             bulge_counter = 0
             j = 3
-            if pair1 < 6:
+            if pair1 < 6 and i < (len(seq1)-2):
                 # bulge of length 1
-                nextPair = determine_pair(seq1[i + 2], seq2[i + 2])
-                if nextPair < 6:
-                    freeEnergy = freeEnergy + stacking[pair1][nextPair]
-                    print(stacking[pair1][nextPair])
-                    # todo: consider number of possible loops of identical sequence
-                    freeEnergy = freeEnergy + bulge_loops[0]  # - RT*log1p(2)
-                    print(bulge_loops[0])
-                    if seq1[i + 1] == 'C' or seq2[i + 1] == 'C':
-                        freeEnergy = freeEnergy + special_C_bulge
-                        print(special_C_bulge)
-                # long bulges
-                elif nextPair == 7:
-                    while nextPair == 7:
-                        bulge_counter = bulge_counter + 1
-                        nextPair = determine_pair(seq1[i + j], seq2[i + j])
-                        j = j + 1
-                    freeEnergy = freeEnergy + bulge_loops[bulge_counter]
-                    # in the case of a bulge with more than 1 nt take end penalties into account
-                    if pair1 == 3 or pair1 == 5:
-                        freeEnergy = freeEnergy + guEndPenalty
-                    if pair1 == 0 or pair1 == 4:
-                        freeEnergy = freeEnergy + auEndPenalty
-                    # todo: what about they change the strand?
-
-
+                if 1 == 1:  # this is just because python is super annoying
+                    nextPair = determine_pair(seq1[i + 2], seq2[i + 2])
+                    if nextPair < 6:
+                        freeEnergy = freeEnergy + stacking[pair1][nextPair]
+                        # todo: consider number of possible loops of identical sequence
+                        freeEnergy = freeEnergy + bulge_loops[0]  # - RT*log1p(2)
+                        if seq1[i + 1] == 'C' or seq2[i + 1] == 'C':
+                            freeEnergy = freeEnergy + special_C_bulge
+                    # long bulges
+                    elif nextPair == 7:
+                        while nextPair == 7 and (i + j) < len(seq1):
+                            bulge_counter = bulge_counter + 1
+                            nextPair = determine_pair(seq1[i + j], seq2[i + j])
+                            j = j + 1
+                        freeEnergy = freeEnergy + bulge_loops[bulge_counter]
+                        # in the case of a bulge with more than 1 nt take end penalties into account
+                        if pair1 == 3 or pair1 == 5:
+                            freeEnergy = freeEnergy + guEndPenalty
+                        if pair1 == 0 or pair1 == 4:
+                            freeEnergy = freeEnergy + auEndPenalty
+                        # todo: what about they change the strand?
 
     freeEnergy = freeEnergy + penalties(seq1, seq2)
-    print(penalties(seq1, seq2))
     # include first non matching base pair after duplex
     freeEnergy = freeEnergy + check_stacking(seq1, seq2, seqfollowing1, seqpre2)
-    print('stacking:')
-    print(check_stacking(seq1, seq2, seqfollowing1, seqpre2))
     # special GU case
     freeEnergy += specialCaseCounter * specialGUCase
     freeEnergy -= specialCaseCounter * (stacking[2][3] + stacking[3][5] + stacking[5][1])
-    print(seq1)
-    print(seq2)
-    print(freeEnergy)
+    #print(seq1)
+    #print(seq2)
+    #print(freeEnergy)
     return freeEnergy
 
 def f(x):
