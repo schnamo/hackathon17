@@ -23,7 +23,7 @@ if len(content) <= 14:
     print('too short')
 else:
     #extract interactions
-    interactions, sequence = extractInteractions(content)
+    interactions, sequence = extractInteractions(content, name[0])
     if int(whatOutput) == 0:
         #write sequence to file
         seq = open(seqFile, "w")
