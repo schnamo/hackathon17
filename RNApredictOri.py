@@ -40,8 +40,8 @@ COLUMNS = [ "p1","p2","p3","p4","p5","p6","p7","m1","m2","m3","m4","p11","p12","
 LABEL = "label"
 
 def input_fn(data_set):
-  feature_cols = {k: tf.constant(data_set[k].values, shape=[data_set[k].size, 1]) for k in FEATURES}
-  labels = tf.constant(data_set[LABEL].values, shape=[data_set[LABEL].size, 1])
+  feature_cols = {k: tf.constant(data_set[k].values) for k in FEATURES}
+  labels = tf.constant(data_set[LABEL].values)
   return feature_cols, labels
 
 
@@ -49,26 +49,25 @@ def main(argv):
 
 
   # Load datasets
-  training_set = pd.read_csv(argv[1], skipinitialspace=True, header=None, skiprows=0, names=COLUMNS)
+  #training_set = pd.read_csv(argv[1], skipinitialspace=True, header=None, skiprows=0, names=COLUMNS)
 
-  test_set = pd.read_csv(argv[2], skipinitialspace=True, header=None, skiprows=0, names=COLUMNS)
-  print("After loading datasets")
+  #test_set = pd.read_csv(argv[2], skipinitialspace=True, header=None, skiprows=0, names=COLUMNS)
 
   # Load datasets.
-  #training_set = tf.contrib.learn.datasets.base.load_csv_without_header(
-  #  filename=argv[1],
-  #  target_dtype=np.int,
-  #  target_column=target_col,
-  #  features_dtype=np.float32)
-  #test_set = tf.contrib.learn.datasets.base.load_csv_without_header(
-  #  filename=argv[2],
-  #  target_dtype=np.int,
-  #  target_column=target_col,
-  #  features_dtype=np.float32)
+  training_set = tf.contrib.learn.datasets.base.load_csv_without_header(
+    filename=argv[1],
+    target_dtype=np.int,
+    target_column=target_col,
+    features_dtype=np.float32)
+  test_set = tf.contrib.learn.datasets.base.load_csv_without_header(
+    filename=argv[2],
+    target_dtype=np.int,
+    target_column=target_col,
+    features_dtype=np.float32)
 
   # Specify that all features have real-value data
-  feature_columns = [tf.contrib.layers.real_valued_column(k) for k in FEATURES]
-  #[tf.contrib.layers.real_valued_column("", dimension=config.dimensions)]
+  #feature_columns = [tf.contrib.layers.real_valued_column(k) for k in FEATURES]
+  feature_columns = [tf.contrib.layers.real_valued_column("", dimension=config.dimensions)]
 
   # Build 3 layer DNN with 10, 20, 10 units respectively.
   classifier = tf.contrib.learn.DNNClassifier(feature_columns=feature_columns,
@@ -78,7 +77,6 @@ def main(argv):
 					    dropout=0.8,
                                             model_dir=model_dir)
   
-  print("After building classifier object")
 
   # Fit model.
   if argv[3] == "learn":
@@ -86,12 +84,10 @@ def main(argv):
      #   x={"x": np.array(training_set.data)}, y=np.array(training_set.target), batch_size=64, shuffle=True, num_epochs=None)
      #train_input_fn = tf.estimator.inputs.pandas_input_fn(
      #   x=pd.DataFrame({k: training_set[k].values for k in FEATURES}), y=pd.Series(training_set[LABEL].values), shuffle=True, num_epochs=None)
-     print("Before training classifier object")
 
      #classifier.fit(input_fn=train_input_fn, steps=config.steps)
-     classifier.partial_fit(input_fn=lambda: input_fn(training_set), steps=config.steps)
-     #classifier.fit(x=training_set.data, y=training_set.target, steps=config.steps)
-     print("After training classifier object")
+     #classifier.fit(input_fn=lambda: input_fn(training_set), steps=1) #config.steps)
+     classifier.fit(x=training_set.data, y=training_set.target, steps=config.steps)
 
      # Evaluate accuracy.
      #test_input_fn = tf.estimator.inputs.numpy_input_fn(
@@ -100,10 +96,9 @@ def main(argv):
      #   x=pd.DataFrame({k: test_set[k].values for k in FEATURES}), y=pd.Series(test_set[LABEL].values), shuffle=False, num_epochs=1)
 
      #accuracy_score = classifier.evaluate(input_fn=test_input_fn, steps=1)["accuracy"]
-     #accuracy_score = classifier.evaluate(x=test_set.data, y=test_set.target)["accuracy"]
-     accuracy_score = classifier.evaluate(input_fn=lambda: input_fn(test_set), steps=1)["accuracy"]
+     accuracy_score = classifier.evaluate(x=test_set.data, y=test_set.target)["accuracy"]
+     #accuracy_score = classifier.evaluate(input_fn=lambda: input_fn(test_set))["accuracy"]
      print('Accuracy: {0:f}'.format(accuracy_score))
-     print("After testing classifier object")
 
   if argv[3] == "test":
      # Evaluate accuracy.
@@ -114,8 +109,8 @@ def main(argv):
      #   x=pd.DataFrame({k: test_set[k].values for k in FEATURES}), y=pd.Series(test_set[LABEL].values), shuffle=False, num_epochs=1)
 
      #accuracy_score = classifier.evaluate(input_fn=test_input_fn, steps=1)["accuracy"]
-     accuracy_score = classifier.evaluate(input_fn=lambda: input_fn(test_set), steps=1)["accuracy"]
-     #accuracy_score = classifier.evaluate(x=test_set.data, y=test_set.target)["accuracy"]
+     #accuracy_score = classifier.evaluate(input_fn=lambda: input_fn(test_set))["accuracy"]
+     accuracy_score = classifier.evaluate(x=test_set.data, y=test_set.target)["accuracy"]
      print('Accuracy: {0:f}'.format(accuracy_score))
 
   if argv[3] == "pred":
@@ -125,9 +120,9 @@ def main(argv):
      #test_input_fn = tf.estimator.inputs.pandas_input_fn(
      #   x=pd.DataFrame({k: test_set[k].values for k in FEATURES}), y=pd.Series(test_set[LABEL].values), shuffle=False, num_epochs=1)
 
-     #y = list(classifier.predict(test_set.data, as_iterable=True))
+     y = list(classifier.predict(test_set.data, as_iterable=True))
      #y = classifier.predict(input_fn=test_input_fn) #, as_iterable=True)
-     y = list(classifier.predict(input_fn=lambda: input_fn(test_set))) #, as_iterable=True))
+     #y = list(classifier.predict(input_fn=lambda: input_fn(test_set), as_iterable=True))
      for pred in y:
        print('{}'.format(str(pred)))
 

@@ -5,7 +5,10 @@ RNA2Int = [1, 0, 2, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 4, 0, 0, 
 def convert(motif):
     motif = motif.upper()
     for i in range(len(motif)):
-      c = chr(ord('0')+RNA2Int[ord(motif[i])-ord('A')])
+      if motif[i] >= 'A' and motif[i] <= 'Z':
+         c = chr(ord('0')+RNA2Int[ord(motif[i])-ord('A')])
+      else:
+         c = '0'
       if i == 0:
          s = c
       else:
@@ -27,8 +30,8 @@ with open(sys.argv[1],"r") as f:
    n = 2
    for line in f:
      line = line.split()
-     motif1 = line[2]
-     motif2 = line[6]
+     motif1 = line[2].replace("_","");
+     motif2 = line[6].replace("_","");
      left1 = convert(leftPad(line[1],context))
      right1 = convert(rightPad(line[3],context))
      left2 = convert(leftPad(line[5],context))
